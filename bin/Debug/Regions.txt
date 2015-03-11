@@ -1,0 +1,103 @@
+﻿MIDWEST
+
+Louisville
+    1KENTUCKY
+    16MONTANA / 16Texas Southern
+    8Cincinnati
+    9NC St
+
+Seattle
+    5North Carolina
+    12IONA
+    4NORTHERN IOWA
+    13UC DAVIS
+
+Columbus
+    6Butler
+    11Temple / 11Texas
+    3Notre Dame
+    14CENTRAL MICHIGAN
+
+Omaha
+    7Oregon
+    10LSU
+    2WISCONSIN
+    15ALBANY
+
+WEST
+
+Pittsburgh
+    1VILLANOVA
+    16ST. FRANCIS (NY)
+    8Ohio St
+    9Georgia
+
+Jacksonville
+    5West Virginia
+    12Indiana / 12BYU
+    4Louisville
+    13LOUISIANA TECH
+
+Columbus
+    6Providence
+    11Purdue
+    3Oklahoma
+    14SOUTH DAKOTA ST
+
+Portland
+    7Michigan St
+    10Colorado St
+    2Arizona
+    15North Carolina Central
+
+EAST
+
+Charlotte
+    1VIRGINIA
+    16Lafayette / 16NORTH FLORIDA
+    8St. John's
+    9Dayton
+
+Jacksonville
+    5Arkansas
+    12WOFFORD
+    4Baylor
+    13Georgia St
+
+Pittsburgh
+    6Georgetown
+    11Oklahoma St
+    3Maryland
+    14YALE
+
+Omaha
+    7Iowa
+    10Virginia Commonwealth
+    2KANSAS
+    15WILLIAM & MARY
+
+SOUTH
+
+Charlotte
+    1Duke
+    16COASTAL CAROLINA
+    8DAVIDSON
+    9Xavier
+
+Portland
+    5Wichita St
+    12STEPHEN F. AUSTIN
+    4Utah
+    13VALPARAISO
+
+Louisville
+    6SMU
+    11BOISE ST
+    3Iowa St
+    14NEW MEXICO ST
+
+Seattle
+    7San Diego St
+    10Ole Miss
+    2GONZAGA
+    15BELMONT

@@ -1,0 +1,9 @@
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\NCAATournamentSimulator.exe.config
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\NCAATournamentSimulator.exe
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\NCAATournamentSimulator.pdb
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\HtmlAgilityPack.dll
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\HtmlAgilityPack.pdb
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\bin\Debug\HtmlAgilityPack.xml
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\obj\Debug\NCAATournamentSimulator.csprojResolveAssemblyReference.cache
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\obj\Debug\NCAATournamentSimulator.exe
+c:\users\andy\documents\visual studio 2013\Projects\NCAATournamentSimulator\obj\Debug\NCAATournamentSimulator.pdb

@@ -1,0 +1,64 @@
+﻿Kentucky,1,1
+UL Monroe,16,0
+West Virginia,8,23
+Michigan State,9,0
+Butler,5,19
+Harvard,12,0
+Louisville,4,12
+Murray St,13,0
+Arkansas,6,0
+UCLA,11,0
+Notre Dame,3,10
+William & Mary,14,0
+Georgetown,7,0
+Temple,10,0
+Kansas,2,8
+South Dakota St,15,0
+Duke,1,4
+NC Central,16,0
+Ole Miss,8,0
+Iowa,9,0
+Baylor,5,20
+Iona,12,0
+Wichita State,4,13
+Eastern Washington,13,0
+Oklahoma St,6,22
+Texas A&M,11,0
+Utah,3,9
+UC Davis,14,0
+Texas,7,0
+St. Johns,10,0
+Wisconsin,2,5
+Albany,15,0
+Virginia,1,2
+Colgate,16,0
+Georgia,8,0
+Dayton,9,0
+Maryland,5,16
+NC State,12,0
+Northern Iowa,4,11
+Bowling Green,13,0
+SMU,6,21
+Stanford,11,0
+Iowa State,3,14
+Sam Houston St,14,0
+Indiana,7,0
+Colorado St,10,0
+Villanova,2,6
+Florida Gulf Coast,15,0
+Gonzaga,1,3
+New Mexico St,16,0
+San Diego St,8,0
+Xavier,9,0
+VCU,5,0
+Wofford,12,0
+Oklahoma,4,17
+Valparaiso,13,0
+Providence,6,0
+LSU,11,0
+North Carolina,3,15
+La Tech,14,0
+Ohio State,7,24
+Cincinnati,10,0
+Arizona,2,7
+High Point,15,0
