@@ -11,7 +11,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
-
 namespace NCAATournamentSimulator
 {
     class Program
@@ -30,48 +29,37 @@ namespace NCAATournamentSimulator
         {
             //Gets the team information and fills in the regions
             fillRegions();
-
             //For each region, get a winner and add them to the Final Four
-            foreach(Region region in Regions)
+            foreach (Region region in Regions)
             {
                 FinalFour.Add(region.getWinner());
                 Console.WriteLine("--------------------------");
                 Console.WriteLine();
             }
-
             //Print out the final four teams and their seed
-            foreach(Team team in FinalFour)
+            foreach (Team team in FinalFour)
             {
-                Console.WriteLine(" " + team.Seed + "\t" + team.Name);         
+                Console.WriteLine(" " + team.Seed + "\t" + team.Name);
             }
-
             Console.ReadKey();
         }
-        
         static void fillRegions()
         {
             //Sets up any arrays/lists needed
             setUp();
-
             var Teams = new Dictionary<String, Team>();
             string[] TeamArray = new string[64];
-
             //Gets online data from stats source
             retreiveOnlineData();
-
-            //Fills in team stats 
+            //Fills in team stats
             Teams = getTeams();
-
-            //Fills in the brackets 
+            //Fills in the brackets
             TeamArray = getBracket();
-
             //Matches team stats with their brackets
             Teams = fillTeamsInBracket(Teams, TeamArray);
-
             //Puts teams in their region
             assignRegions(Teams);
         }
-
         static void retreiveOnlineData()
         {
             string team;
@@ -84,7 +72,6 @@ namespace NCAATournamentSimulator
             HtmlDocument doc = web.Load(StatsWebSite);
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@id='data-area'] //td");
             StreamWriter sw = new StreamWriter(HTMLFileName);
-
             int count = 1;
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -103,12 +90,10 @@ namespace NCAATournamentSimulator
             }
             sw.Close();
         }
-
         static Dictionary<String, Team> getTeams()
         {
             StreamReader file = new StreamReader(HTMLFileName);
             var Teams = new Dictionary<String, Team>();
-
             string line;
             while ((line = file.ReadLine()) != null)
             {
@@ -130,11 +115,9 @@ namespace NCAATournamentSimulator
             file.Close();
             return Teams;
         }
-
         static string[] getBracket()
         {
             StreamReader file = new StreamReader(RegionFileName);
-
             string[] teams = new string[64];
             string line;
             int ta;
@@ -156,7 +139,6 @@ namespace NCAATournamentSimulator
             {
                 string two = teamName.Substring(4, 2);
                 string one = teamName[4].ToString();
-
                 if (teamName.Contains("/"))
                 {
                     int numCount = 0;
@@ -187,14 +169,11 @@ namespace NCAATournamentSimulator
             file.Close();
             return teams;
         }
-
         static Dictionary<String, Team> fillTeamsInBracket(Dictionary<String, Team> uoTeams, string[] TeamArray)
         {
             var Teams = new Dictionary<String, Team>();
-
             TeamArray = modifyESPNSchoolNames(TeamArray);
             uoTeams = modifyKenPomSchoolNames(uoTeams);
-
             foreach (string teamName in TeamArray)
             {
                 foreach (Team teamDic in uoTeams.Values)
@@ -208,13 +187,11 @@ namespace NCAATournamentSimulator
             }
             return Teams;
         }
-
         static void assignRegions(Dictionary<String, Team> Teams)
         {
             int[] seeds = { 1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15 };
             int count = 0;
             int i = 0;
-
             foreach (var team in Teams)
             {
                 if (count < 16)
@@ -238,14 +215,12 @@ namespace NCAATournamentSimulator
                     South.Teams.Add(team.Key, team.Value);
                 }
                 count++;
-
                 if (i == 15)
                     i = 0;
                 else
                     i++;
             }
         }
-
         static void setUp()
         {
             Regions[0] = Midwest;
@@ -253,15 +228,12 @@ namespace NCAATournamentSimulator
             Regions[2] = East;
             Regions[3] = South;
         }
-
         static Dictionary<String, Team> modifyKenPomSchoolNames(Dictionary<String, Team> Teams)
         {
             foreach (Team team in Teams.Values)
             {
                 team.Name = team.Name.Trim().ToUpper();
-
                 string name = team.Name;
-
                 if (team.Name.Substring(team.Name.Length - 3, 3).Equals("ST."))
                 {
                     team.Name = team.Name.Substring(0, team.Name.Length - 3);
@@ -270,7 +242,6 @@ namespace NCAATournamentSimulator
             }
             return Teams;
         }
-
         static string[] modifyESPNSchoolNames(string[] TeamArray)
         {
             for (int i = 0; i < TeamArray.Length; i++)
@@ -295,14 +266,12 @@ namespace NCAATournamentSimulator
                 {
                     TeamArray[i] = "NORTH CAROLINA ST";
                 }
-
                 if (TeamArray[i].Substring(TeamArray[i].Length - 3, 3).Equals(" ST"))
                 {
                     TeamArray[i] = TeamArray[i].Substring(0, TeamArray[i].Length - 2);
                     TeamArray[i] += "STATE";
                 }
             }
-
             return TeamArray;
         }
     }

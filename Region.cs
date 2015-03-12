@@ -10,6 +10,7 @@ namespace NCAATournamentSimulator
     {
         public static Random random = new Random();
         public Dictionary<String, Team> Teams = new Dictionary<String, Team>();
+        public static List<Team> UpsetTeams = new List<Team>();
 
         public Team getWinner()
         {
@@ -26,6 +27,11 @@ namespace NCAATournamentSimulator
 
         public Team[] playRound(Team[] TeamArray, int numOfTeams)
         {
+            foreach (Team team in TeamArray)
+            {
+                Console.WriteLine(" " + team.Seed + "\t" + team.Name);
+            }
+
             Team[] winners = new Team[numOfTeams/2];
             Team team1;
             Team team2;
@@ -44,19 +50,13 @@ namespace NCAATournamentSimulator
                     count++;
                 }
             }
-
-            foreach(Team team in winners)
-            {
-                Console.WriteLine(" " + team.Seed + "\t" + team.Name);
-            }
-
             Console.WriteLine();
             return winners;
         }
 
         /*
          * This is where the games are simulated. There are many ways to do this depending on your philosophy. 
-         * Currently it's just using KenPom's "Pyth" state which is weighted to get realistic probabilities.
+         * Currently it's just using KenPom's "Pyth" state which, here, is weighted to get realistic probabilities.
          * However, offensive stats, defensive stats, schedule strength, luck, and seed are all held in the Team object 
          * and can easily be accessed here. 
          */
@@ -108,6 +108,15 @@ namespace NCAATournamentSimulator
                     }
                 }
             }
+
+            foreach(var team in WinningTeam)
+            {
+                if(team.Value > 45 && team.Value < 55)
+                {
+                    UpsetTeams.Add(team.Key);
+                }
+            }
+
             return getMostCommonValue(WinningTeam);
         }
 
@@ -125,6 +134,14 @@ namespace NCAATournamentSimulator
         int randomNum(Random random, int highValue)
         {
             return random.Next(1, highValue);
+        }
+
+        public void printCloseGames()
+        {
+            foreach(Team team in UpsetTeams)
+            {
+                Console.WriteLine(team.Name);
+            }
         }
     }
 }
