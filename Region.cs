@@ -62,17 +62,29 @@ namespace NCAATournamentSimulator
          */
         public Team game(Team team1, Team team2)
         {
-            string name1 = team1.Name;
-            string name2 = team2.Name;
+            double p1 = 1;
+            double p2 = 1;
+            
+            p1 += (16 - team1.Seed);
+            if (team1.AdjD < team1.AdjO)
+            {
+                p1 += (team1.AdjO - team1.AdjD);
+            }
+            p1 *= team1.SOS;
+            p1 *= team1.Pyth;
 
-            double pyth1 = double.Parse(team1.Pyth);
-            double pyth2 = double.Parse(team2.Pyth);
-            pyth1 -= .39;
-            pyth2 -= .39;
-            double p1 = pyth1 * 1000;
-            double p2 = pyth2 * 1000;
+            p2 += (16 - team2.Seed);
+            if(team2.AdjD < team2.AdjO)
+            {
+                p2 += (team2.AdjO - team2.AdjD);
+            }
+            p2 *= team2.SOS;
+            p2 *= team2.Pyth;
 
             double total = p1 + p2;
+            
+            //p1 /= total;
+            //p2 /= total;
 
             /*
              * After probabilities are set (pX/total=proability) games are simulated by a random number which picks the winning team.
@@ -80,7 +92,7 @@ namespace NCAATournamentSimulator
              * The team that gets the most wins out of that will be returned.
             */
             var WinningTeam = new Dictionary<Team, int>();
-            int amountOfSims = 100;
+            int amountOfSims = 20;
             for (int i = 0; i < amountOfSims; i++)
             {
                 int randomNumber = randomNum(random, (int)total);
