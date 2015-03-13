@@ -14,12 +14,12 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 namespace NCAATournamentSimulator
 {
     class Program
-    {
-        public static Region[] Regions = new Region[4];
+    {     
         public static Region Midwest = new Region();
         public static Region South = new Region();
         public static Region East = new Region();
         public static Region West = new Region();
+        public static List<Region> Regions = new List<Region>(new Region[] { Midwest, South, East, West});
         public static List<Team> FinalFour = new List<Team>();
         public static string StatsWebSite = "http://kenpom.com";
         public static string HTMLFileName = "HTMLdata.txt";
@@ -27,97 +27,82 @@ namespace NCAATournamentSimulator
 
         static void Main(string[] args)
         {
-            //Gets the team information and fills in the regions
-            fillRegions();
-            //For each region, get a winner and add them to the Final Four
+            var Teams = new Dictionary<String, Team>();
+            List<string> TeamList = new List<string>();
+
+            retreiveOnlineData();
+            Teams = getTeams();
+            TeamList = getBracket();
+            Teams = fillTeamsInBracket(Teams, TeamList);
+            assignRegions(Teams);
+
             foreach (Region region in Regions)
             {
                 FinalFour.Add(region.getWinner());
                 Console.WriteLine("--------------------------");
                 Console.WriteLine();
             }
-            //Print out the final four teams and their seed
+
             foreach (Team team in FinalFour)
             {
                 Console.WriteLine(" " + team.Seed + "\t" + team.Name);
             }
             Console.ReadKey();
         }
-        static void fillRegions()
-        {
-            //Sets up any arrays/lists needed
-            setUp();
-            var Teams = new Dictionary<String, Team>();
-            string[] TeamArray = new string[64];
-            //Gets online data from stats source
-            retreiveOnlineData();
-            //Fills in team stats
-            Teams = getTeams();
-            //Fills in the brackets
-            TeamArray = getBracket();
-            //Matches team stats with their brackets
-            Teams = fillTeamsInBracket(Teams, TeamArray);
-            //Puts teams in their region
-            assignRegions(Teams);
-        }
+
         static void retreiveOnlineData()
         {
-            string team;
-            string Pyth;
-            string AdjO;
-            string AdjD;
-            string Luck;
-            string SOS;
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(StatsWebSite);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//div[@id='data-area'] //td");
-            StreamWriter sw = new StreamWriter(HTMLFileName);
+            HtmlWeb Website = new HtmlWeb();
+            HtmlDocument StatsDoc = Website.Load(StatsWebSite);
+            HtmlNodeCollection Node = StatsDoc.DocumentNode.SelectNodes("//div[@id='data-area'] //td");
+            StreamWriter File = new StreamWriter(HTMLFileName);
+
             int count = 1;
-            for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < Node.Count; i++)
             {
-                string data = nodes[i].InnerText;
-                if (nodes[i].OuterHtml.Equals("<td>" + count + "</td>") || nodes[i].OuterHtml.Equals("<td class=\"bold-bottom\">" + count + "</td>"))
+                string data = Node[i].InnerText;
+                if (Node[i].OuterHtml.Equals("<td>" + count + "</td>") || Node[i].OuterHtml.Equals("<td class=\"bold-bottom\">" + count + "</td>"))
                 {
-                    team = nodes[i + 1].InnerText;
-                    Pyth = nodes[i + 4].InnerText;
-                    AdjO = nodes[i + 5].InnerText;
-                    AdjD = nodes[i + 7].InnerText;
-                    Luck = nodes[i + 11].InnerText;
-                    SOS = nodes[i + 13].InnerText;
-                    sw.WriteLine(team + "," + Pyth + "," + AdjO + "," + AdjD + "," + Luck + "," + SOS);
+                    string team = Node[i + 1].InnerText;
+                    string Pyth = Node[i + 4].InnerText;
+                    string AdjO = Node[i + 5].InnerText;
+                    string AdjD = Node[i + 7].InnerText;
+                    string Luck = Node[i + 11].InnerText;
+                    string SOS = Node[i + 13].InnerText;
+                    File.WriteLine(team + "," + Pyth + "," + AdjO + "," + AdjD + "," + Luck + "," + SOS);
                     count++;
                 }
             }
-            sw.Close();
+            File.Close();
         }
         static Dictionary<String, Team> getTeams()
         {
             StreamReader file = new StreamReader(HTMLFileName);
             var Teams = new Dictionary<String, Team>();
+
             string line;
             while ((line = file.ReadLine()) != null)
             {
-                int wordCount = 0;
-                string[] team = new string[6];
+                List<string> TeamList = new List<string>();
                 foreach (string word in line.Split(','))
                 {
-                    team[wordCount] = word;
-                    wordCount++;
+                    TeamList.Add(word);
                 }
                 for (int i = 0; i < 3; i++)
                 {
                     if (i == 0)
                     {
-                        Teams.Add(team[i], new Team(team[i], team[i + 1], team[i + 2], team[i + 3], team[i + 4], team[i + 5]));
+                        Teams.Add(TeamList[i], new Team(TeamList[i], TeamList[i + 1], TeamList[i + 2], TeamList[i + 3], TeamList[i + 4], TeamList[i + 5]));
                     }
                 }
             }
             file.Close();
             return Teams;
         }
-        static string[] getBracket()
+        static List<string> getBracket()
         {
             StreamReader file = new StreamReader(RegionFileName);
+
             string[] teams = new string[64];
             string line;
             int ta;
@@ -167,9 +152,10 @@ namespace NCAATournamentSimulator
                 c++;
             }
             file.Close();
-            return teams;
+
+            return teams.ToList(); 
         }
-        static Dictionary<String, Team> fillTeamsInBracket(Dictionary<String, Team> uoTeams, string[] TeamArray)
+        static Dictionary<String, Team> fillTeamsInBracket(Dictionary<String, Team> uoTeams, List<string> TeamArray)
         {
             var Teams = new Dictionary<String, Team>();
             TeamArray = modifyESPNSchoolNames(TeamArray);
@@ -221,13 +207,7 @@ namespace NCAATournamentSimulator
                     i++;
             }
         }
-        static void setUp()
-        {
-            Regions[0] = Midwest;
-            Regions[1] = West;
-            Regions[2] = East;
-            Regions[3] = South;
-        }
+
         static Dictionary<String, Team> modifyKenPomSchoolNames(Dictionary<String, Team> Teams)
         {
             foreach (Team team in Teams.Values)
@@ -242,9 +222,9 @@ namespace NCAATournamentSimulator
             }
             return Teams;
         }
-        static string[] modifyESPNSchoolNames(string[] TeamArray)
+        static List<string> modifyESPNSchoolNames(List<string> TeamArray)
         {
-            for (int i = 0; i < TeamArray.Length; i++)
+            for (int i = 0; i < TeamArray.Count; i++)
             {
                 if (TeamArray[i].Equals("VIRGINIA COMMONWEALTH"))
                 {
