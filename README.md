@@ -1,8 +1,10 @@
 # NCAATournamentSimulator
 NCAA bracket simulator using Kenpom.com and ESPN's bracketology bracket
 
-This is a small console app which predicts the final four of the NCAA Tournament. 
+This is a small console app which predicts the final four of the NCAA Tournament.
+
 Team data is retreived from KenPom.com using the HTMLAgilityPack API
+
 The bracket comes from ESPN's Bracketology page
 
 ---------------------------------------------------------------------------
