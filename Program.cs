@@ -19,10 +19,15 @@ namespace NCAATournamentSimulator
         {
             var Teams = new Dictionary<String, Team>();
             Dictionary<string, int> TeamNames = new Dictionary<string, int>();
+
+            //First, stats from all 351 teams is retreived from KenPom
             Teams = buildTeams();
-            TeamNames = getTeamsAndRank();
+            //Then the teams that are participating in the tourny (names and rank) are retreived from ESPN
+            TeamNames = getTeamNames(); 
+            //Then those team names are matched with their respective teams object which contains their stats
             Teams = fillBracket(Teams, TeamNames);
 
+            //The data is then used for the tournament simulation
             foreach (Region region in Regions)
             {
                 FinalFour.Add(region.getWinner());
@@ -30,13 +35,13 @@ namespace NCAATournamentSimulator
                 Console.WriteLine();
             }
 
+            //Finally, the winners are printed to the screen
             foreach (Team team in FinalFour)
             {
                 Console.WriteLine(" " + team.Seed + "\t" + team.Name);
             }
             Console.ReadKey();
-        }
-        
+        }   
 
         static Dictionary<String, Team> buildTeams()
         {
@@ -58,7 +63,7 @@ namespace NCAATournamentSimulator
             return Teams;
         }
 
-        static Dictionary<string, int> getTeamsAndRank()
+        static Dictionary<string, int> getTeamNames()
         {
             HtmlWeb Website = new HtmlWeb();
             HtmlDocument StatsDoc = Website.Load(BracketWebSite);
@@ -101,6 +106,7 @@ namespace NCAATournamentSimulator
             Dictionary<String, Team> Teams = new Dictionary<String, Team>();
 
             UnorderedTeams = ModifyKenPomName(UnorderedTeams);
+
             foreach (var team in TeamsWithRank)
             {
                 foreach (Team teamDic in UnorderedTeams.Values)
@@ -112,6 +118,7 @@ namespace NCAATournamentSimulator
                     }
                 }
             }
+
             assignSeeds(Teams, TeamsWithRank);
 
             int count = 0;
