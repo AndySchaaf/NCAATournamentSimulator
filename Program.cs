@@ -1,14 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 namespace NCAATournamentSimulator
@@ -26,13 +17,11 @@ namespace NCAATournamentSimulator
 
         static void Main(string[] args)
         {
-            var TeamWithObjects = new Dictionary<String, Team>();
-            Dictionary<string, int> TeamsWithRank = new Dictionary<string, int>();
-
-            TeamWithObjects = buildTeams();
-            TeamsWithRank = getTeamsAndRank();
-            TeamWithObjects = fillTeamsInBracket(TeamWithObjects, TeamsWithRank);
-            assignRegions(TeamWithObjects);
+            var Teams = new Dictionary<String, Team>();
+            Dictionary<string, int> TeamNames = new Dictionary<string, int>();
+            Teams = buildTeams();
+            TeamNames = getTeamsAndRank();
+            Teams = fillBracket(Teams, TeamNames);
 
             foreach (Region region in Regions)
             {
@@ -47,43 +36,7 @@ namespace NCAATournamentSimulator
             }
             Console.ReadKey();
         }
-
-        static Dictionary<string, int> getTeamsAndRank()
-        {
-            HtmlWeb Website = new HtmlWeb();
-            HtmlDocument StatsDoc = Website.Load(BracketWebSite);
-            HtmlNodeCollection Team = StatsDoc.DocumentNode.SelectNodes("//div[@class='bracket'] //a[@href]");
-            HtmlNodeCollection Rank = StatsDoc.DocumentNode.SelectNodes("//span[@class='rank']");
-            List<string> teams = new List<string>();
-            List<int> rank = new List<int>();
-
-            for (int i = 0; i < Rank.Count; i++)
-            {
-                rank.Add(int.Parse(Rank[i].InnerText));
-            }
-            for (int i = 0; i < Team.Count; i++)
-            {
-                teams.Add(Team[i].InnerText.ToUpper());
-            }
-            for (int i = 0; i < teams.Count; i++ )
-            {
-                teams[i] = ModifyESPNName(teams[i]);
-            }
-            for (int i = 1; i < rank.Count; i++)
-            {
-                if (rank[i] == rank[i - 1])
-                {
-                    rank.RemoveAt(i);
-                    teams.RemoveAt(i);
-                }
-            }
-            Dictionary<string, int> Teams = new Dictionary<string, int>();
-            for (int i = 0; i < teams.Count; i++)
-            {
-                Teams.Add(teams[i], rank[i]);
-            }
-            return Teams;
-        }
+        
 
         static Dictionary<String, Team> buildTeams()
         {
@@ -105,7 +58,45 @@ namespace NCAATournamentSimulator
             return Teams;
         }
 
-        static Dictionary<String, Team> fillTeamsInBracket(Dictionary<String, Team> UnorderedTeams, Dictionary<string, int> TeamsWithRank)
+        static Dictionary<string, int> getTeamsAndRank()
+        {
+            HtmlWeb Website = new HtmlWeb();
+            HtmlDocument StatsDoc = Website.Load(BracketWebSite);
+            HtmlNodeCollection Team = StatsDoc.DocumentNode.SelectNodes("//div[@class='bracket'] //a[@href]");
+            HtmlNodeCollection Rank = StatsDoc.DocumentNode.SelectNodes("//span[@class='rank']");
+            List<string> teams = new List<string>();
+            List<int> rank = new List<int>();
+
+            for (int i = 0; i < Rank.Count; i++)
+            {
+                rank.Add(int.Parse(Rank[i].InnerText));
+            }
+            for (int i = 0; i < Team.Count; i++)
+            {
+                teams.Add(Team[i].InnerText.ToUpper());
+            }
+
+            for (int i = 0; i < teams.Count; i++)
+            {
+                teams[i] = ModifyESPNName(teams[i]);
+            }
+            for (int i = 1; i < rank.Count; i++)
+            {
+                if (rank[i] == rank[i - 1])
+                {
+                    rank.RemoveAt(i);
+                    teams.RemoveAt(i);
+                }
+            }
+            Dictionary<string, int> Teams = new Dictionary<string, int>();
+            for (int i = 0; i < teams.Count; i++)
+            {
+                Teams.Add(teams[i], rank[i]);
+            }
+            return Teams;
+        }
+
+        static Dictionary<String, Team> fillBracket(Dictionary<String, Team> UnorderedTeams, Dictionary<string, int> TeamsWithRank)
         {
             Dictionary<String, Team> Teams = new Dictionary<String, Team>();
 
@@ -122,28 +113,7 @@ namespace NCAATournamentSimulator
                 }
             }
             assignSeeds(Teams, TeamsWithRank);
-            
-            return Teams;
-        }
 
-        static void assignSeeds(Dictionary<String, Team> Teams, Dictionary<string, int> TeamsWithRank)
-        {
-            List<int> Seeds = new List<int>();
-            foreach (int seed in TeamsWithRank.Values)
-            {
-                Seeds.Add(seed);
-            }
-
-            int count = 0;
-            foreach (Team team in Teams.Values)
-            {
-                team.Seed = Seeds[count];
-                count++;
-            }
-        }
-
-        static void assignRegions(Dictionary<String, Team> Teams)
-        {
             int count = 0;
             foreach (var team in Teams)
             {
@@ -163,6 +133,24 @@ namespace NCAATournamentSimulator
                 {
                     South.Teams.Add(team.Key, team.Value);
                 }
+                count++;
+            }
+
+            return Teams;
+        }
+
+        static void assignSeeds(Dictionary<String, Team> Teams, Dictionary<string, int> TeamsWithRank)
+        {
+            List<int> Seeds = new List<int>();
+            foreach (int seed in TeamsWithRank.Values)
+            {
+                Seeds.Add(seed);
+            }
+
+            int count = 0;
+            foreach (Team team in Teams.Values)
+            {
+                team.Seed = Seeds[count];
                 count++;
             }
         }
@@ -210,7 +198,6 @@ namespace NCAATournamentSimulator
                 Name = Name.Substring(0, Name.Length - 2);
                 Name += "STATE";
             }
-
             return Name;
         }
     }

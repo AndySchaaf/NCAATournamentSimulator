@@ -18,33 +18,35 @@ namespace NCAATournamentSimulator
             int numOfTeams = 16;
             for (int i = 0; i < 4; i++ )
             {
-                TeamArray = playRound(TeamArray, numOfTeams);
+                TeamArray = PlayRound(TeamArray, numOfTeams);
+
+                //Each time a round is is played, the number of teams is halved 
                 numOfTeams /= 2;
             }
+
             return TeamArray[0];
         }
 
-        public Team[] playRound(Team[] TeamArray, int numOfTeams)
+        public Team[] PlayRound(Team[] TeamArray, int numOfTeams)
         {
             foreach (Team team in TeamArray)
             {
                 Console.WriteLine(" " + team.Seed + "\t" + team.Name);
             }
 
+            //There will always be half as many winners as the number of teams
             Team[] winners = new Team[numOfTeams/2];
-            Team team1;
-            Team team2;
-            Team winner;
 
             int count = 0;
             for (int i = 1; i < numOfTeams + 2; i++)
             {
-                if(i % 2 == 0) //Every two
+                //Every two so that teams can be accessed in groups of two
+                if(i % 2 == 0) 
                 {
-                    team1 = TeamArray[i - 2];
-                    team2 = TeamArray[i - 1];
+                    Team team1 = TeamArray[i - 2];
+                    Team team2 = TeamArray[i - 1];
 
-                    winner = game(team1, team2);
+                    Team winner = SimulateGame(team1, team2);
                     winners[count] = winner;
                     count++;
                 }
@@ -53,7 +55,7 @@ namespace NCAATournamentSimulator
             return winners;
         }
 
-        public Team game(Team team1, Team team2)
+        public Team SimulateGame(Team team1, Team team2)
         {
             double p1 = 1;
             double p2 = 1;
@@ -105,7 +107,7 @@ namespace NCAATournamentSimulator
                     }
                 }
             }
-            return getMostCommonValue(WinningTeam);
+            return getMostCommonValue(WinningTeam);            
         }
 
         Team getMostCommonValue(Dictionary<Team, int> dic)
