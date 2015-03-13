@@ -10,7 +10,6 @@ namespace NCAATournamentSimulator
     {
         public static Random random = new Random();
         public Dictionary<String, Team> Teams = new Dictionary<String, Team>();
-        public static List<Team> UpsetTeams = new List<Team>();
 
         public Team getWinner()
         {
@@ -54,12 +53,6 @@ namespace NCAATournamentSimulator
             return winners;
         }
 
-        /*
-         * This is where the games are simulated. There are many ways to do this depending on your philosophy. 
-         * Currently it's just using KenPom's "Pyth" state which, here, is weighted to get realistic probabilities.
-         * However, offensive stats, defensive stats, schedule strength, luck, and seed are all held in the Team object 
-         * and can easily be accessed here. 
-         */
         public Team game(Team team1, Team team2)
         {
             double p1 = 1;
@@ -82,17 +75,9 @@ namespace NCAATournamentSimulator
             p2 *= team2.Pyth;
 
             double total = p1 + p2;
-            
-            //p1 /= total;
-            //p2 /= total;
 
-            /*
-             * After probabilities are set (pX/total=proability) games are simulated by a random number which picks the winning team.
-             * This is done for a set amount of sims declared in the amountOfSims variable.
-             * The team that gets the most wins out of that will be returned.
-            */
             var WinningTeam = new Dictionary<Team, int>();
-            int amountOfSims = 20;
+            int amountOfSims = 15;
             for (int i = 0; i < amountOfSims; i++)
             {
                 int randomNumber = randomNum(random, (int)total);
@@ -120,15 +105,6 @@ namespace NCAATournamentSimulator
                     }
                 }
             }
-
-            foreach(var team in WinningTeam)
-            {
-                if(team.Value > 45 && team.Value < 55)
-                {
-                    UpsetTeams.Add(team.Key);
-                }
-            }
-
             return getMostCommonValue(WinningTeam);
         }
 
@@ -146,14 +122,6 @@ namespace NCAATournamentSimulator
         int randomNum(Random random, int highValue)
         {
             return random.Next(1, highValue);
-        }
-
-        public void printCloseGames()
-        {
-            foreach(Team team in UpsetTeams)
-            {
-                Console.WriteLine(team.Name);
-            }
         }
     }
 }

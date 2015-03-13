@@ -23,16 +23,13 @@ namespace NCAATournamentSimulator
         public static List<Team> FinalFour = new List<Team>();
         public static string StatsWebSite = "http://kenpom.com";
         public static string BracketWebSite = "http://espn.go.com/mens-college-basketball/bracketology/_/iteration/255"; //Must update to get current bracket
-        public static string HTMLFileName = "HTMLdata.txt";
-        public static string RegionFileName = "Regions.txt";
 
         static void Main(string[] args)
         {
             var TeamWithObjects = new Dictionary<String, Team>();
             Dictionary<string, int> TeamsWithRank = new Dictionary<string, int>();
 
-            retreiveOnlineData();
-            TeamWithObjects = getTeams();
+            TeamWithObjects = buildTeams();
             TeamsWithRank = getTeamsAndRank();
             TeamWithObjects = fillTeamsInBracket(TeamWithObjects, TeamsWithRank);
             assignRegions(TeamWithObjects);
@@ -80,7 +77,6 @@ namespace NCAATournamentSimulator
                     teams.RemoveAt(i);
                 }
             }
-
             Dictionary<string, int> Teams = new Dictionary<string, int>();
             for (int i = 0; i < teams.Count; i++)
             {
@@ -89,117 +85,29 @@ namespace NCAATournamentSimulator
             return Teams;
         }
 
-        static void retreiveOnlineData()
+        static Dictionary<String, Team> buildTeams()
         {
             HtmlWeb Website = new HtmlWeb();
             HtmlDocument StatsDoc = Website.Load(StatsWebSite);
             HtmlNodeCollection Node = StatsDoc.DocumentNode.SelectNodes("//div[@id='data-area'] //td");
-            StreamWriter File = new StreamWriter(HTMLFileName);
+            Dictionary<String, Team> Teams = new Dictionary<String, Team>();
 
             int count = 1;
             for (int i = 0; i < Node.Count; i++)
             {
                 string data = Node[i].InnerText;
                 if (Node[i].OuterHtml.Equals("<td>" + count + "</td>") || Node[i].OuterHtml.Equals("<td class=\"bold-bottom\">" + count + "</td>"))
-                {
-                    string team = Node[i + 1].InnerText;
-                    string Pyth = Node[i + 4].InnerText;
-                    string AdjO = Node[i + 5].InnerText;
-                    string AdjD = Node[i + 7].InnerText;
-                    string Luck = Node[i + 11].InnerText;
-                    string SOS = Node[i + 13].InnerText;
-                    File.WriteLine(team + "," + Pyth + "," + AdjO + "," + AdjD + "," + Luck + "," + SOS);
+                {         
+                    Teams.Add(Node[i + 1].InnerText, new Team(Node[i + 1].InnerText, Node[i + 4].InnerText, Node[i + 5].InnerText, Node[i + 7].InnerText, Node[i + 11].InnerText, Node[i + 13].InnerText));
                     count++;
                 }
             }
-            File.Close();
-        }
-
-        static Dictionary<String, Team> getTeams()
-        {
-            StreamReader file = new StreamReader(HTMLFileName);
-            var Teams = new Dictionary<String, Team>();
-
-            string line;
-            while ((line = file.ReadLine()) != null)
-            {
-                List<string> TeamList = new List<string>();
-                foreach (string word in line.Split(','))
-                {
-                    TeamList.Add(word);
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    if (i == 0)
-                    {
-                        Teams.Add(TeamList[i], new Team(TeamList[i], TeamList[i + 1], TeamList[i + 2], TeamList[i + 3], TeamList[i + 4], TeamList[i + 5]));
-                    }
-                }
-            }
-            file.Close();
             return Teams;
-        }
-        static List<string> getBracket()
-        {
-            StreamReader file = new StreamReader(RegionFileName);
-
-            string[] TeamArray = new string[64];
-            string line;
-            int ta;
-            int count = 0;
-            while ((line = file.ReadLine()) != null)
-            {
-                if (line != "" && line != "WEST" && line != "EAST")
-                {
-                    if (int.TryParse(line[4].ToString(), out ta))
-                    {
-                        TeamArray[count] = line;
-                        count++;
-                    }
-                }
-            }
-
-            int rank;
-            count = 0;
-            foreach (string teamName in TeamArray)
-            {
-                string two = teamName.Substring(4, 2);
-                string one = teamName[4].ToString();
-                if (teamName.Contains("/"))
-                {
-                    int numCount = 0;
-                    for (int i = 0; i < teamName.Length; i++)
-                    {
-                        if (int.TryParse(teamName[i].ToString(), out rank))
-                        {
-                            numCount++;
-                            if (numCount == 4)
-                            {
-                                TeamArray[count] = teamName.Substring(i + 1, teamName.Length - (i + 1)).ToUpper();
-                            }
-                        }
-                    }
-                }
-                else if (int.TryParse(two, out rank))
-                {
-                    string newName = teamName.Substring(6, teamName.Length - 6).ToUpper();
-                    TeamArray[count] = newName;
-                }
-                else if (int.TryParse(one, out rank))
-                {
-                    string newName = teamName.Substring(5, teamName.Length - 5).ToUpper();
-                    TeamArray[count] = newName;
-                }
-                count++;
-            }
-            file.Close();
-
-            return TeamArray.ToList(); 
         }
 
         static Dictionary<String, Team> fillTeamsInBracket(Dictionary<String, Team> UnorderedTeams, Dictionary<string, int> TeamsWithRank)
         {
-            var Teams = new Dictionary<String, Team>();
+            Dictionary<String, Team> Teams = new Dictionary<String, Team>();
 
             UnorderedTeams = ModifyKenPomName(UnorderedTeams);
             foreach (var team in TeamsWithRank)
@@ -213,7 +121,13 @@ namespace NCAATournamentSimulator
                     }
                 }
             }
+            assignSeeds(Teams, TeamsWithRank);
             
+            return Teams;
+        }
+
+        static void assignSeeds(Dictionary<String, Team> Teams, Dictionary<string, int> TeamsWithRank)
+        {
             List<int> Seeds = new List<int>();
             foreach (int seed in TeamsWithRank.Values)
             {
@@ -221,18 +135,16 @@ namespace NCAATournamentSimulator
             }
 
             int count = 0;
-            foreach(Team team in Teams.Values)
+            foreach (Team team in Teams.Values)
             {
                 team.Seed = Seeds[count];
                 count++;
             }
-            return Teams;
         }
 
         static void assignRegions(Dictionary<String, Team> Teams)
         {
             int count = 0;
-            int i = 0;
             foreach (var team in Teams)
             {
                 if (count < 16)
@@ -252,10 +164,6 @@ namespace NCAATournamentSimulator
                     South.Teams.Add(team.Key, team.Value);
                 }
                 count++;
-                if (i == 15)
-                    i = 0;
-                else
-                    i++;
             }
         }
 
@@ -274,36 +182,36 @@ namespace NCAATournamentSimulator
             return Teams;
         }
 
-        static string ModifyESPNName(string teamName)
+        static string ModifyESPNName(string Name)
         {
-            if (teamName.Equals("VIRGINIA COMMONWEALTH"))
+            if (Name.Equals("VIRGINIA COMMONWEALTH"))
             {
-                teamName = "VCU";
+                Name = "VCU";
             }
-            else if (teamName.Equals("ST. FRANCIS (NY)"))
+            else if (Name.Equals("ST. FRANCIS (NY)"))
             {
-                teamName = "ST. FRANCIS NY";
+                Name = "ST. FRANCIS NY";
             }
-            else if (teamName.Equals("UL MONROE"))
+            else if (Name.Equals("UL MONROE"))
             {
-                teamName = "LOUISIANA MONROE";
+                Name = "LOUISIANA MONROE";
             }
-            else if (teamName.Equals("OLE MISS"))
+            else if (Name.Equals("OLE MISS"))
             {
-                teamName = "MISSISSIPPI";
+                Name = "MISSISSIPPI";
             }
-            else if (teamName.Equals("NC ST"))
+            else if (Name.Equals("NC ST"))
             {
-                teamName = "NORTH CAROLINA ST";
-            }
-
-            if (teamName.Substring(teamName.Length - 3, 3).Equals(" ST"))
-            {
-                teamName = teamName.Substring(0, teamName.Length - 2);
-                teamName += "STATE";
+                Name = "NORTH CAROLINA ST";
             }
 
-            return teamName;
+            if (Name.Substring(Name.Length - 3, 3).Equals(" ST"))
+            {
+                Name = Name.Substring(0, Name.Length - 2);
+                Name += "STATE";
+            }
+
+            return Name;
         }
     }
 }
