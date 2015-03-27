@@ -55,8 +55,30 @@ namespace NCAATournamentSimulator
             {
                 string data = Node[i].InnerText;
                 if (Node[i].OuterHtml.Equals("<td>" + count + "</td>") || Node[i].OuterHtml.Equals("<td class=\"bold-bottom\">" + count + "</td>"))
-                {         
-                    Teams.Add(Node[i + 1].InnerText, new Team(Node[i + 1].InnerText, Node[i + 4].InnerText, Node[i + 5].InnerText, Node[i + 7].InnerText, Node[i + 11].InnerText, Node[i + 13].InnerText));
+                {
+                    int o;
+                    int c = 0;
+                    string name = Node[i + 1].InnerText;
+                    foreach(char ch in name)
+                    {
+                        if(int.TryParse(ch.ToString(), out o))
+                        {
+                            c++;
+                        }
+                    }
+                    switch(c)
+                    {
+                        case 2:
+                            name = name.TrimEnd().Substring(0, name.Length - 2);
+                            break;
+                        case 1:
+                            name = name.TrimEnd().Substring(0, name.Length - 1);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Teams.Add(name, new Team(name, Node[i + 4].InnerText, Node[i + 5].InnerText, Node[i + 7].InnerText, Node[i + 11].InnerText, Node[i + 13].InnerText));
                     count++;
                 }
             }
